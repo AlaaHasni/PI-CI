@@ -5,13 +5,13 @@ NEXUS_VERSION = "nexus3"
 NEXUS_PROTOCOL = "http"
 NEXUS_URL = "localhost:8081/"
 NEXUS_REPOSITORY = "maven-snapshots"
-NEXUS_CREDENTIAL_ID = "nexus-credentials"
+NEXUS_CREDENTIAL_ID = "	nexus_credential"
 }
 stages {
 stage('checkout') {
 steps {
 echo ' start checkout..'
-git credentialsId: 'a7a3b467-52a6-4321-8bf4-45618acd8574', url: 'https://github.com/MedAminesadfi/integrationContinu.git'
+git credentialsId: 'a7a3b467-52a6-4321-8bf4-45618acd8574', url: 'https://github.com/AlaaHasni/PI-CI.git'
 echo 'checkout Done..'
 }
 }
@@ -83,7 +83,7 @@ error "*** File: ${artifactPath}, could not be found";
 }
 post {
 always {
-emailext body: 'Bonjour', subject: 'test jenkis', to: 'mohamedamine.sadfi@esprit.tn'
+emailext body: 'Bonjour', subject: 'test jenkis', to: 'mohamedalaa.hasni@esprit.tn'
 }
 
 }
