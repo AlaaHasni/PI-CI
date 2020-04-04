@@ -1,47 +1,46 @@
 pipeline {
-agent any
+agent {
+label "master"
+}
+tools {
+// Note: this should match with the tool name configured in your jenkins instance (JENKINS_URL/configureTools/)
+maven "maven"
+}
 environment {
+// This can be nexus3 or nexus2
 NEXUS_VERSION = "nexus3"
+// This can be http or https
 NEXUS_PROTOCOL = "http"
-NEXUS_URL = "localhost:8081/"
+// Where your Nexus is running
+NEXUS_URL = "localhost:8081"
+// Repository where we will upload the artifact
 NEXUS_REPOSITORY = "maven-snapshots"
-NEXUS_CREDENTIAL_ID = "	nexus_credential"
+// Jenkins credential id to authenticate to Nexus OSS
+NEXUS_CREDENTIAL_ID = "nexus_credential"
 }
 stages {
-stage('checkout') {
+stage("clone code") {
 steps {
-echo ' start checkout..'
-git credentialsId: 'a7a3b467-52a6-4321-8bf4-45618acd8574', url: 'https://github.com/AlaaHasni/PI-CI.git'
-echo 'checkout Done..'
+script {
+// Let's clone the source
+git 'https://github.com/AlaaHasni/PI-CI.git';
 }
 }
-stage('Build') {
+}
+stage("mvn build") {
 steps {
-echo 'Building..'
-bat label: '', script: '''cd ./maven-demo-1
-mvn clean install'''
-echo 'Building.Done.'
+script {
+// If you are using Windows then you should use "bat" step
+// Since unit testing is out of the scope we skip them
+bat "mvn package -DskipTests=true"
 }
 }
-stage('Test') {
+}
+stage("publish to nexus") {
 steps {
-echo 'Testing..'
-bat label: '', script: '''cd ./maven-demo-1
-mvn clean test'''
-echo 'Testing. Done.'
-}
-}
-stage('Deploy') {
-steps {
-echo 'Deploying....'
-}
-}
-stage('publish to nexus') {
-steps {
-echo 'publish to nexus..'
 script {
 // Read POM xml file using 'readMavenPom' step , this step 'readMavenPom' is included in: https://plugins.jenkins.io/pipeline-utility-steps
-pom = readMavenPom file: "./maven-demo-1/pom.xml";
+pom = readMavenPom file: "pom.xml";
 // Find built artifact under target folder
 filesByGlob = findFiles(glob: "target/*.${pom.packaging}");
 // Print some info from the artifact found
@@ -78,12 +77,7 @@ error "*** File: ${artifactPath}, could not be found";
 }
 }
 }
-}
 
-}
-post {
-always {
-emailext body: 'Bonjour', subject: 'test jenkis', to: 'mohamedalaa.hasni@esprit.tn'
 }
 
 }
