@@ -32,6 +32,12 @@ bat "mvn package -DskipTests=true"
 }
 }
 }
+
+post {
+always {
+emailext body: 'Bonjour', subject: 'test jenkis', to: 'mohamedalaa.hasni@esprit.tn'
+}
+
 stage("publish to nexus") {
 steps {
 script {
